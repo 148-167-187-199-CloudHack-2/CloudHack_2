@@ -19,3 +19,4 @@ if __name__ == '__main__':
 	channel.queue_declare(queue='new_ride_queue')
 	channel.basic_consume(queue='new_ride_queue', on_message_callback=get_time_from_rabbit, auto_ack=True)
 	channel.start_consuming()
+	print("hello")

@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import pika
 
 # use pika for RabbitMQ connections
-connection= pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+connection= pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
 channel=connection.channel() 
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ def handle_new_ride():
 
     # push time to RabbitMQ client.
     channel.queue_declare(queue='new_ride_queue')
-    channel.basic_publish(exchange='', routing_key='', body= time)
+    channel.basic_publish(exchange='', routing_key='new_ride_queue', body= time)
     print("Sent message to receiver")
 
     return ""
@@ -22,7 +22,7 @@ def handle_new_ride():
 def handle_new_customer():
     customer = jsonify(request.form)
     channel.queue_declare(queue='new_ride_matching_queue')
-    channel.basic_publish(exchange='', routing_key='', body= customer)
+    channel.basic_publish(exchange='', routing_key='new_ride', body= customer)
     print("Sent to database")
     
     return ""
