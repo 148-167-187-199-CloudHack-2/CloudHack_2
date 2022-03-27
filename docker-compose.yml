@@ -1,0 +1,28 @@
+
+version: '3.8'
+
+services:
+  
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+  consumer:
+    build: consumer
+    volumes:
+      - ./consumer:/consumer
+    environment:
+      - PYTHONUNBUFFERED=1
+  database:
+    build: database
+    volumes:
+     - ./database:/database
+
+  server:
+    build: producer
+    volumes:
+      - ./producer:/producer
+    ports:
+      - 5000:5000
