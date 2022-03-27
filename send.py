@@ -2,8 +2,6 @@
 import pika
 from datetime import datetime
 import sys
-# now = datetime.now()
-# time = now.strftime("%H:%M:%S")
 
 message = ''.join(sys.argv[1])
 
