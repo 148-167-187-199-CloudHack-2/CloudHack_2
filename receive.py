@@ -3,7 +3,6 @@ import pika, sys, os
 import time
 import tqdm
 
-
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
     channel = connection.channel()
