@@ -1,5 +1,5 @@
 
-version: '3.8'
+version: '3.0'
 
 services:
   
@@ -8,10 +8,17 @@ services:
     ports:
       - '5672:5672'
       - '15672:15672'
-    networks:
-      - custom_network
+
+  producer: 
+    restart: always
+    build: producer
+    volumes:
+      - ./producer:/producer
+    ports:
+      - '5000:5000'
 
   consumer:
+    restart: always
     build: consumer
     volumes:
       - ./consumer:/consumer
@@ -19,25 +26,13 @@ services:
       - PYTHONUNBUFFERED=1
       - PRODUCERIP=127.0.0.1
       - PRODUCERPORT=5000
-    networks:
-      - custom_network
-
+    
   database:
+    restart: always
     build: database
     volumes:
      - ./database:/database
-    networks:
-      - custom_network
+    
+    
 
-  server:
-    build: producer
-    volumes:
-      - ./producer:/producer
-    ports:
-      - 5000:5000
-    networks:
-      - custom_network
 
-networks:
-  custom_network:
-    driver: custom-driver-1
