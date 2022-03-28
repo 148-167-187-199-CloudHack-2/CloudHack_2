@@ -10,6 +10,6 @@ WORKDIR /database
 
 COPY . /database
 
-ENTRYPOINT [ "python3" ]
+ENV PYTHONUNBUFFERED=0
 
-CMD [ "database.py" ]
+CMD [ "python3", "-u", "database.py" ]

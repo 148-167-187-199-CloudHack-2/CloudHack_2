@@ -9,6 +9,6 @@ WORKDIR /consumer
 
 COPY . /consumer
 
-ENTRYPOINT [ "python3" ]
+ENV PYTHONUNBUFFERED=0
 
-CMD [ "consumer.py" ]
+CMD [ "python3", "-u", "consumer.py" ]

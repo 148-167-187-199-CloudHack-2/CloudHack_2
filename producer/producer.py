@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import pika
+import time
 
 # use pika for RabbitMQ connections
 
@@ -7,18 +8,17 @@ app = Flask(__name__)
 
 @app.route("/new_ride", methods=['POST'])
 def handle_new_ride():
-	time = request.form['time']
-
 	try:
 		connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq"))
 	except pika.exceptions.AMQPConnectionError as exc:
 		print("Failed to connect to RabbitMQ service. Message wont be sent.")
-		return
 
 	channel=connection.channel() 
+	
+	time = request.form['time']
 
 	# push time to RabbitMQ client.
-	channel.queue_declare(queue='new_ride_queue', durable=True)
+	channel.queue_declare(queue='new_ride_queue')
 	channel.basic_publish(
 		exchange='',
 		routing_key='new_ride_queue',
@@ -29,26 +29,25 @@ def handle_new_ride():
 
 	connection.close()
 
-	return "Sent message" + time + "to receiver"
+	return "Sent message" + time + "to receiver\n"
 
 
 @app.route("/new_ride_matching_customer", methods=['POST'])
 def handle_new_customer():
-	customer = jsonify(request.form)
-
 	try:
 		connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq"))
 	except pika.exceptions.AMQPConnectionError as exc:
 		print("Failed to connect to RabbitMQ service. Message wont be sent.")
-		return
 
 	channel=connection.channel() 
+	customer = jsonify(request.form)
+	customer = str(customer)
 
-	channel.queue_declare(queue='new_ride_matching_queue', durable=True)
+	channel.queue_declare(queue='new_ride_matching_queue')
 	channel.basic_publish(
 		exchange='',
 		routing_key='new_ride_matching_queue',
-		body=time,
+		body=customer,
 		properties=pika.BasicProperties(
 			delivery_mode=2,  # make message persistent
 		))
