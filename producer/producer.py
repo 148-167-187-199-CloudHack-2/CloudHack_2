@@ -29,7 +29,7 @@ def handle_new_ride():
 
 	connection.close()
 
-	return "Sent message" + time + "to receiver\n"
+	return "Sent message " + time + " to receiver\n"
 
 
 @app.route("/new_ride_matching_customer", methods=['POST'])

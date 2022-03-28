@@ -26,7 +26,7 @@ def main():
         val_passed = body.decode()
         obj= {"cid": val_passed}
         # print(obj)
-        col.insert_one(obj)
+        collection.insert_one(obj)
         print("Inserted into database")
 
 
