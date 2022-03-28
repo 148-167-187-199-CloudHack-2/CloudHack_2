@@ -15,3 +15,5 @@ COPY . /producer
 ENTRYPOINT [ "python3" ]
 
 CMD [ "producer.py" ]
+
+EXPOSE 5000

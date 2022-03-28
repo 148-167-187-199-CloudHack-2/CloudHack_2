@@ -1,25 +1,30 @@
-#!/usr/bin/env python
 import pika, sys, os
 import random
-import tqdm
+import time
 import pymongo
 from pymongo import MongoClient
-from flask import jsonify
 import json
 
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    time.sleep(60)
+
+    print("[INFO] database STARTED.")
+
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq"))
+    except pika.exceptions.AMQPConnectionError as exc:
+        print("Failed to connect to RabbitMQ service. Message wont be sent.")
+        return
     channel = connection.channel()
 
     channel.queue_declare(queue='new_ride_matching_queue')
 
     def callback(ch, method, properties, body):
-        val_passed= body.decode()
+        val_passed = body.decode()
         obj = json.loads(val_passed) 
 
         #code to add data into mongo db
-        CONN_STR = "mongodb+srv://gayathri-sunil:NySZ8OCAEE1uQZap@cluster0.mn5ub.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-        client = MongoClient(CONN_STR)
+        client = MongoClient("mongodb")
 
         db = client["ride-share-db"]
         collection = db["ride-share"]
@@ -28,7 +33,9 @@ def main():
         collection.insert_one(obj)
 
         print("Inserted into database successfully")
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
+    channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue='new_ride_matching_queue', on_message_callback=callback, auto_ack=True)
     channel.start_consuming()
 

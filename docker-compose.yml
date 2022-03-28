@@ -10,29 +10,38 @@ services:
       - '15672:15672'
 
   producer: 
-    restart: always
     build: producer
+    links:
+      - rabbitmq
     volumes:
       - ./producer:/producer
     ports:
-      - '5000:5000'
+      - '127.0.0.1:5000:5000'
 
   consumer:
-    restart: always
+    # restart: always
     build: consumer
+    links:
+      - rabbitmq
     volumes:
       - ./consumer:/consumer
     environment:
-      - PYTHONUNBUFFERED=1
-      - PRODUCERIP=127.0.0.1
-      - PRODUCERPORT=5000
+      - SERVER_IP=producer
+      - SERVER_PORT=5000
+      - CUST_ID=1
     
   database:
-    restart: always
+    # restart: always
     build: database
+    links:
+      - mongodb
+      - rabbitmq
     volumes:
      - ./database:/database
     
-    
+  mongodb:
+    image: mongo
+    ports:
+      - 27017
 
 
