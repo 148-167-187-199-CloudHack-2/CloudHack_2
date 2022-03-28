@@ -5,35 +5,33 @@ import pymongo
 from pymongo import MongoClient
 import json
 
+
 def main():
     time.sleep(60)
 
-    print("[INFO] database STARTED.")
+    client = MongoClient('mongodb')
+    db= client['ride-db']
+    col = db[ "ride-col" ]
+    print('Database created now')
 
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq"))
     except pika.exceptions.AMQPConnectionError as exc:
         print("Failed to connect to RabbitMQ service. Message wont be sent.")
         return
-    channel = connection.channel()
 
+    channel = connection.channel()
     channel.queue_declare(queue='new_ride_matching_queue')
 
     def callback(ch, method, properties, body):
         val_passed = body.decode()
-        obj = json.loads(val_passed) 
+        obj= {"cid": val_passed}
+        print()
+        col.insert_one(obj)
 
-        #code to add data into mongo db
-        client = MongoClient("mongodb")
-
-        db = client["ride-share-db"]
-        collection = db["ride-share"]
-        cust_id = random.randint(100000,999999)
-        obj["cust_id"]= cust_id
-        collection.insert_one(obj)
-
-        print("Inserted into database successfully")
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+        x= col.find()
+        for ob in x:
+            print(ob)
 
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue='new_ride_matching_queue', on_message_callback=callback, auto_ack=True)
