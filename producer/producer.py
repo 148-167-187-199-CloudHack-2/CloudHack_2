@@ -40,7 +40,7 @@ def handle_new_customer():
 		print("Failed to connect to RabbitMQ service. Message wont be sent.")
 
 	channel=connection.channel() 
-	customer = request.form['cid']
+	customer = '{ \"cid\":\"' + request.form['cid'] +'\", \"ipaddr\":\"' + request.form['ipaddr'] + '\"}'
 
 	channel.queue_declare(queue='new_ride_matching_queue')
 	channel.basic_publish(
