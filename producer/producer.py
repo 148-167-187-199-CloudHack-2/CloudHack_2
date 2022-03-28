@@ -40,8 +40,7 @@ def handle_new_customer():
 		print("Failed to connect to RabbitMQ service. Message wont be sent.")
 
 	channel=connection.channel() 
-	customer = jsonify(request.form)
-	customer = str(customer)
+	customer = request.form['cid']
 
 	channel.queue_declare(queue='new_ride_matching_queue')
 	channel.basic_publish(
@@ -54,6 +53,6 @@ def handle_new_customer():
 
 	connection.close()
 
-	return "Sent" + customer + "to database"
+	return "Sent " + customer + " to database"
 
 app.run(host='0.0.0.0', port=5000, debug=True)
