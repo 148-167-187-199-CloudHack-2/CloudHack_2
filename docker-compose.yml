@@ -18,7 +18,7 @@ services:
     ports:
       - '127.0.0.1:5000:5000'
 
-  consumer:
+  consumer_1:
     # restart: always
     build: consumer
     links:
@@ -29,6 +29,17 @@ services:
       - SERVER_IP=producer
       - SERVER_PORT=5000
       - CUST_ID=1
+
+  consumer_2:
+    build: consumer
+    links:
+      - rabbitmq
+    volumes:
+      - ./consumer:/consumer
+    environment:
+      - SERVER_IP=producer
+      - SERVER_PORT=5000
+      - CUST_ID=2
     
   database:
     # restart: always

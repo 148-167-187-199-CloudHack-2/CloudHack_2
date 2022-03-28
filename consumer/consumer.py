@@ -10,7 +10,7 @@ CUST_ID= os.environ["CUST_ID"]
 def get_time_from_rabbit(ch, method, properties, body):
 	val_passed = body.decode()
 	time_to_sleep = int(val_passed)
-	print("Sleeping for ", time_to_sleep, " seconds")
+	print("[CUST ", CUST_ID, "] Sleeping for ", time_to_sleep, " seconds")
 	time.sleep(time_to_sleep) 
 
 if __name__ == '__main__':
